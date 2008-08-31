@@ -1,1 +1,9 @@
-Run script/perlmmm_server.pl to test the application.
+PerlMMM - The Perl Monger's Meeting Manager
+
+This application comes in 3 parts.  One is the storage mechanism, which is
+PerlMMM::Meeting::Manager.  This includes the second part, which is pluggable
+storage backends.  Right now that means only Movable Type.
+
+The final part is to come, which is a Catalyst-based front-end that allows easy
+editing and propagation to multiple storage locations so you can get the most
+visibility for your meetings.
