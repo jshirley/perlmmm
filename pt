@@ -8,18 +8,20 @@ my $manager = PerlMMM::Manager->new(
         'MT' => {
             url      => 'http://code.toeat.com/jshirley/rsd.xml',
             username => 'jshirley',
-            password => '...'
+            password => '...',
+            categories => [ 'Perl Mongers' ]
         }
     }
 );
 
-my $meetings = $manager->meetings;
-foreach my $meeting ( @$meetings ) {
-    print $meeting->as_string;
+if ( 0 ) {
+    my $meetings = $manager->meetings;
+    foreach my $meeting ( @$meetings ) {
+        print $meeting->as_string;
+    }
 }
 
-
-if ( 0 ) {
+if ( 1 ) {
     my $adr = Data::Microformat::adr->new;
     $adr->street_address('1000 Clay St');
     $adr->locality('Portland');
@@ -33,7 +35,7 @@ if ( 0 ) {
 
 
     my $meeting = PerlMMM::Manager::Meeting->new(
-            store       => $manager->stores->[0],
+            storage     => $manager->stores->[0],
             speaker     => $speaker,
             title       => q{I'm a Stub},
             description => q{Stub placeholder meeting, wee},
@@ -41,6 +43,7 @@ if ( 0 ) {
             start_date  => DateTime->now,
             duration    => DateTime::Duration->new( hours => 1 ),
     );
-
+    print $meeting->storage, "\n";
     print $meeting->as_string;
+    $meeting->save;
 }

@@ -7,6 +7,12 @@ use Moose::Util::TypeConstraints;
 
 has 'storage' => (
     isa => 'Object',
+    is  => 'rw'
+);
+
+has 'id' => (
+    isa => 'Int',
+    is  => 'rw',
 );
 
 has 'speaker' => (
@@ -55,6 +61,26 @@ sub as_string {
         $hcal->to_hcard,
         $self->description,
     );
+}
+
+sub generate_summary {
+    my ( $self ) = @_;
+    my $hcal = Data::Microformat::hCal->new;
+        $hcal->dtstart( $self->start_date->iso8601 );
+        $hcal->dtend($self->start_date->add( $self->duration )->iso8601);
+
+    join("\n",
+        "<h1>" . $self->title . "</h1>",
+        $self->speaker->to_hcard,
+        $self->location->to_hcard,
+        $hcal->to_hcard,
+    );
+}
+
+
+sub save {
+    my ( $self ) = @_;
+    $self->storage->save( $self );
 }
 
 1;

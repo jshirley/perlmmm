@@ -3,12 +3,14 @@ package PerlMMM::Manager::Storage;
 use Moose::Role;
 use PerlMMM::Manager::Meeting;
 
+requires 'parse_id';
 requires 'parse_location';
 requires 'parse_title';
 requires 'parse_description';
 requires 'parse_speaker';
 requires 'parse_start_time';
 requires 'parse_duration';
+requires 'save';
 
 has 'meetings' => (
     isa         => 'ArrayRef',
@@ -26,6 +28,7 @@ sub fetch_meetings {
     foreach my $data ( @$raw_list ) {
         eval {
             push @meetings, PerlMMM::Manager::Meeting->new(
+                id          => $self->parse_id( $data ),
                 title       => $self->parse_title( $data ),
                 description => $self->parse_description( $data ),
                 speaker     => $self->parse_speaker( $data ),

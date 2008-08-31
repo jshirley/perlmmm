@@ -35,6 +35,12 @@ has 'client' => (
     where => sub { shift->isa('Net::MovableType'); }
 );
 
+has 'categories' => (
+    isa         => 'ArrayRef',
+    is          => 'rw',
+    metaclass   => 'Collection::Array',
+);
+
 sub BUILD {
     my ( $self, $params ) = @_;
     unless ( $self->client ) {
@@ -47,6 +53,11 @@ sub BUILD {
 sub get_data { 
     my ( $self ) = @_;
     $self->client->getRecentPosts(1);
+}
+
+sub parse_id {
+    my ( $self, $post ) = @_;
+    $post->{postid};
 }
 
 sub parse_location { 
@@ -104,6 +115,30 @@ sub parse_duration {
         return $end_time - $start_time;
     }
     return undef;
+}
+
+sub save {
+    my ( $self, $meeting ) = @_;
+
+    my $entry = {
+        title           => $meeting->title,
+        description     => $meeting->generate_summary,
+        mt_text_more    => $meeting->description,
+    };
+
+    if ( $meeting->id ) {
+        my $page = $self->client->getPost( $meeting->id );
+        if ( $page ) {
+            $self->client->editPost($meeting->id, $entry);
+            return;
+        }
+        # Couldn't fetch if we got here, so move on.
+    }
+    my $id = $self->client->newPost($entry, 0);
+    if ( $self->categories ) {
+        $self->client->setPostCategories($id, $self->categories);
+    }
+    $self->client->publishPost($id);
 }
 
 1;
