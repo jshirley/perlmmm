@@ -27,6 +27,11 @@ sub fetch_meetings {
     my @meetings = ();
     foreach my $data ( @$raw_list ) {
         eval {
+            # TODO: We need to query other stores for meetings based on its
+            # UUID, then we can just add ourself into the stores.  This means
+            # that we'll have to call back to the ::Manager instance to add
+            # the meeting though and then let it do the work.  Or, just let it
+            # merge the stores and meetings in Manager->fetch_meetings
             push @meetings, PerlMMM::Manager::Meeting->new(
                 id          => $self->parse_id( $data ),
                 title       => $self->parse_title( $data ),
@@ -35,7 +40,7 @@ sub fetch_meetings {
                 start_date  => $self->parse_start_time( $data ),
                 duration    => $self->parse_duration( $data ),
                 location    => $self->parse_location( $data ),
-                storage     => $self
+                stores      => [ $self ]
             );
         };
         if ( $@ ) {

@@ -33,9 +33,8 @@ if ( 1 ) {
     $speaker->fn("Bob Almighty");
     $speaker->nickname("BobAlmighty");
 
-
     my $meeting = PerlMMM::Manager::Meeting->new(
-            storage     => $manager->stores->[0],
+            stores      => $manager->stores,
             speaker     => $speaker,
             title       => q{I'm a Stub},
             description => q{Stub placeholder meeting, wee},
@@ -43,7 +42,6 @@ if ( 1 ) {
             start_date  => DateTime->now,
             duration    => DateTime::Duration->new( hours => 1 ),
     );
-    print $meeting->storage, "\n";
     print $meeting->as_string;
     $meeting->save;
 }

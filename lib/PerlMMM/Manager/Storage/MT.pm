@@ -135,7 +135,10 @@ sub save {
         # Couldn't fetch if we got here, so move on.
     }
     my $id = $self->client->newPost($entry, 0);
-    if ( $self->categories ) {
+    unless ( $id ) {
+        die "Failed posting entry\n";
+    }
+    if ( $self->categories and @{$self->categories} ) {
         $self->client->setPostCategories($id, $self->categories);
     }
     $self->client->publishPost($id);

@@ -2,12 +2,15 @@ package PerlMMM::Manager::Meeting;
 
 use Moose;
 
-use MooseX::Types::DateTime qw/DateTime Duration/;
+use PerlMMM::Manager::Types qw(Stores Storage);
+use MooseX::Types::DateTime qw(DateTime Duration);
+
 use Moose::Util::TypeConstraints;
 
-has 'storage' => (
-    isa => 'Object',
-    is  => 'rw'
+has 'stores' => (
+    isa         => 'Stores',
+    is          => 'rw',
+    coerce      => 1,
 );
 
 has 'id' => (
@@ -80,7 +83,11 @@ sub generate_summary {
 
 sub save {
     my ( $self ) = @_;
-    $self->storage->save( $self );
+    die "Can't save without at least one store\n"
+        unless @{ $self->stores || [] };
+    foreach my $store ( @{ $self->stores } ) {
+        $store->save( $self );
+    }
 }
 
 1;

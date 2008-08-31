@@ -7,21 +7,7 @@ use MooseX::AttributeHelpers;
 
 with 'MooseX::Object::Pluggable';
 
-#use PerlMMM::Manager::Types qw(Stores);
-subtype 'Storage' => as   'Object';
-subtype 'Stores'  => as   'ArrayRef[Storage]';
-coerce  'Stores'  => from 'HashRef[HashRef]' => via {
-    my $stores = [];
-    foreach my $type ( keys %$_ ) {
-        eval { 
-            Class::MOP::load_class("PerlMMM::Manager::Storage::$type");
-            push @$stores, 
-                "PerlMMM::Manager::Storage::$type"->new( $_->{$type} );
-        };
-        if ( $@ ) { carp "Failed to load storage class $type:\n$@"; }
-    }
-    return $stores;
-};
+use PerlMMM::Manager::Types qw(Stores Storage);
 
 has 'stores' => (
     isa         => 'Stores',
